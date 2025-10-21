@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Угадай число</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❓</text></svg>">
+  <link rel="stylesheet" href="../styles/style.css" />
+</head>
+<body>
+  <div class="page-container">
+    <header>
+      <h1>Угадай число</h1>
+      <nav></nav>
+    </header>
+
+    <main>
+      <div class="content-wrapper">
+        <h2>Добро пожаловать, <span id="userName"></span>!</h2>
+<div id="guessGame" style="margin-top: 2rem; padding: 1.5rem; background: #f9f9f9; border-radius: 8px; text-align: center;">
+  <h3> Угадай число от 1 до 100</h3>
+  <p id="gameMessage" style="margin: 1rem 0; min-height: 1.5rem;">
+    Я загадал число от 1 до 100. Попробуй угадать!
+  </p>
+  <input type="number" id="userGuess" min="1" max="100" placeholder="Введите число"
+         style="padding: 12px; width: 220px; margin: 0.75rem; text-align: center; font-size: 16px; border: 1px solid #ccc; border-radius: 6px;" />
+  <br />
+  <button id="submitGuess" style="padding: 10px 20px; margin: 0.5rem; font-size: 16px;">Проверить</button>
+  <button id="newGame" style="padding: 10px 20px; margin: 0.5rem; font-size: 16px; background-color: #b1a897;">Новая игра</button>
+  <p id="attempts" style="font-size: 0.95em; color: #666; margin-top: 1rem;"></p>
+  <p id="bestScore" style="font-size: 0.95em; color: #2980b9; margin-top: 0.5rem;"></p>
+</div>
+    </main>
+        <footer>
+      <p>© Масловская Алиса Николавена</p>
+    </footer>
+
+<script>
+  (function() {
+    
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const userId = currentUser ? currentUser.username : 'guest';
+
+
+    function initGame() {
+      window.secretNumber = Math.floor(Math.random() * 100) + 1;
+      window.attempts = 0;
+      window.gameOver = false;
+
+      document.getElementById('gameMessage').textContent = 'Я загадал число от 1 до 100. Попробуй угадать!';
+      document.getElementById('gameMessage').style.color = '#333';
+      document.getElementById('userGuess').value = '';
+      document.getElementById('userGuess').focus();
+      updateAttempts();
+    }
+
+    function loadBestScore() {
+      const saved = localStorage.getItem(`guessGameBestScore_${userId}`);
+      return saved ? parseInt(saved, 10) : null;
+    }
+
+
+    function saveBestScore(score) {
+      localStorage.setItem(`guessGameBestScore_${userId}`, score.toString());
+    }
+
+
+    function updateAttempts() {
+      document.getElementById('attempts').textContent = `Попыток: ${window.attempts}`;
+      const best = loadBestScore();
+      if (best !== null) {
+        document.getElementById('bestScore').textContent = `Лучший результат: ${best} попыток`;
+      } else {
+        document.getElementById('bestScore').textContent = 'Лучший результат: ещё нет';
+      }
+    }
+
+    function checkGuess() {
+      if (window.gameOver) return;
+
+      const guessInput = document.getElementById('userGuess');
+      const guess = parseInt(guessInput.value, 10);
+
+      if (isNaN(guess) || guess < 1 || guess > 100) {
+        document.getElementById('gameMessage').textContent = 'Введите число от 1 до 100!';
+        document.getElementById('gameMessage').style.color = '#e74c3c';
+        return;
+      }
+
+      window.attempts++;
+      updateAttempts();
+
+      if (guess === window.secretNumber) {
+        document.getElementById('gameMessage').textContent = `🎉 Поздравляю! Ты угадал число ${window.secretNumber} за ${window.attempts} попыток!`;
+        document.getElementById('gameMessage').style.color = '#2ecc71';
+        window.gameOver = true;
+
+
+        const best = loadBestScore();
+        if (best === null || window.attempts < best) {
+          saveBestScore(window.attempts);
+          document.getElementById('bestScore').textContent = `🏆 Новый рекорд: ${window.attempts} попыток!`;
+        }
+      } else if (guess < window.secretNumber) {
+        document.getElementById('gameMessage').textContent = 'Слишком мало! Попробуй больше.';
+        document.getElementById('gameMessage').style.color = '#e67e22';
+      } else {
+        document.getElementById('gameMessage').textContent = 'Слишком много! Попробуй меньше.';
+        document.getElementById('gameMessage').style.color = '#e67e22';
+      }
+
+      guessInput.value = '';
+      guessInput.focus();
+    }
+
+
+    document.getElementById('submitGuess').addEventListener('click', checkGuess);
+    document.getElementById('newGame').addEventListener('click', initGame);
+    document.getElementById('userGuess').addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') checkGuess();
+    });
+
+    initGame();
+  })();
+</script>
+  <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (user) {
+          document.getElementById('userName').textContent = user.firstName || user.username;
+        }
+      });
+    </script>
+  <script src="../scripts/auth.js"></script>
+</body>
+</html>

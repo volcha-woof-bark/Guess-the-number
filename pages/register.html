@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Регистрация</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❓</text></svg>">
+  <link rel="stylesheet" href="../styles/style.css" />
+</head>
+<body>
+  <div class="page-container">
+    <header>
+      <h1>Регистрация</h1>
+      <nav></nav>
+    </header>
+
+    <main>
+      <div class="content-wrapper">
+        <form id="registerForm">
+          <label for="username">Логин*</label>
+          <input type="text" id="username" name="username" required />
+
+          <label for="password">Пароль*</label>
+          <input type="password" id="password" name="password" required />
+
+          <label for="email">Email*</label>
+          <input type="email" id="email" name="email" required />
+
+          <label for="firstName">Имя</label>
+          <input type="text" id="firstName" name="firstName" />
+
+          <label for="lastName">Фамилия</label>
+          <input type="text" id="lastName" name="lastName" />
+
+          <label for="birthDate">Дата рождения</label>
+          <input type="date" id="birthDate" name="birthDate" />
+
+          <label for="country">Страна</label>
+            <select id="country" name="country">
+                <option value="">— Выберите страну —</option>
+                <option value="Россия">Россия</option>
+                <option value="Беларусь">Беларусь</option>
+                <option value="Казахстан">Казахстан</option>
+                <option value="Армения">Армения</option>
+                <option value="Грузия">Грузия</option>
+                <option value="Узбекистан">Узбекистан</option>
+                <option value="Туркменистан">Туркменистан</option>
+                <option value="Киргизия">Киргизия</option>
+                <option value="Таджикистан">Таджикистан</option>
+                <option value="Литва">Литва</option>
+                <option value="Латвия">Латвия</option>
+                <option value="Эстония">Эстония</option>
+                <option value="Молдова">Молдова</option>
+                <option value="Азербайджан">Азербайджан</option>
+                <option value="США">США</option>
+                <option value="Германия">Германия</option>
+                <option value="Франция">Франция</option>
+                <option value="Великобритания">Великобритания</option>
+                <option value="Канада">Канада</option>
+                <option value="Китай">Китай</option>
+                <option value="Япония">Япония</option>
+                <option value="Южная Корея">Южная Корея</option>
+            </select>
+
+          <button type="submit">Зарегистрироваться</button>
+        </form>
+      </div>
+    </main>
+
+    <footer>
+      <p>© Масловская Алиса Николавена</p>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const user = {};
+      for (let [key, value] of formData.entries()) {
+        user[key] = value;
+      }
+
+      const existing = JSON.parse(localStorage.getItem('users') || '[]');
+      if (existing.some(u => u.username === user.username || u.email === user.email)) {
+        alert('Пользователь с таким логином или email уже существует!');
+        return;
+      }
+
+      existing.push(user);
+      localStorage.setItem('users', JSON.stringify(existing));
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      alert('Регистрация успешна! Перенаправляем на вход...');
+      window.location.href = 'login.html';
+    });
+  </script>
+  <script src="../scripts/auth.js"></script>
+</body>
+</html>
